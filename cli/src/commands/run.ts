@@ -64,7 +64,7 @@ export async function runCommand(opts: RunOptions): Promise<void> {
   loadPaperclipEnvFile(configPath);
   await printUpdateNotice(configPath);
 
-  p.intro(pc.bgCyan(pc.black(` ${opts.introLabel ?? "paperclipai run"} `)));
+  p.intro(pc.bgCyan(pc.black(` ${opts.introLabel ?? "phibot run"} `)));
   p.log.message(pc.dim(`Home: ${paths.homeDir}`));
   p.log.message(pc.dim(`Instance: ${paths.instanceId}`));
   p.log.message(pc.dim(`Config: ${configPath}`));
@@ -72,7 +72,7 @@ export async function runCommand(opts: RunOptions): Promise<void> {
   if (!configExists(configPath)) {
     if ((!process.stdin.isTTY || !process.stdout.isTTY) && !opts.yes) {
       p.log.error("No config found and terminal is non-interactive.");
-      p.log.message(`Run ${pc.cyan("paperclipai onboard")} once, then retry ${pc.cyan("paperclipai run")}.`);
+      p.log.message(`Run ${pc.cyan("sudo phibot setup")} once, then retry ${pc.cyan("phibot run")}.`);
       process.exit(1);
     }
 

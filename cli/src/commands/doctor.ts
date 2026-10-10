@@ -20,6 +20,7 @@ import {
 import { loadPaperclipEnvFile } from "../config/env.js";
 import { printPaperclipCliBanner } from "../utils/banner.js";
 import { printUpdateNotice } from "../update-notice.js";
+import { rebrandCliText } from "../phibot/rebrand.js";
 
 const STATUS_ICON = {
   pass: pc.green("✓"),
@@ -36,7 +37,7 @@ export async function doctor(opts: {
 }): Promise<{ passed: number; warned: number; failed: number }> {
   await printUpdateNotice(opts.config);
   printPaperclipCliBanner();
-  p.intro(pc.bgCyan(pc.black(" paperclip doctor ")));
+  p.intro(pc.bgCyan(pc.black(" phibot doctor ")));
 
   const configPath = resolveConfigPath(opts.config);
   loadPaperclipEnvFile(configPath);
@@ -155,9 +156,9 @@ export async function doctor(opts: {
 
 function printResult(result: CheckResult): void {
   const icon = STATUS_ICON[result.status];
-  p.log.message(`${icon} ${pc.bold(result.name)}: ${result.message}`);
+  p.log.message(`${icon} ${pc.bold(result.name)}: ${rebrandCliText(result.message)}`);
   if (result.status !== "pass" && result.repairHint) {
-    p.log.message(`  ${pc.dim(result.repairHint)}`);
+    p.log.message(`  ${pc.dim(rebrandCliText(result.repairHint))}`);
   }
 }
 

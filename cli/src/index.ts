@@ -51,6 +51,7 @@ import { installCommand } from "./commands/install.js";
 import { uninstallCommand } from "./commands/uninstall.js";
 import { updateCommand } from "./commands/update.js";
 import { registerServiceCommands } from "./commands/service.js";
+import { rebrandCliText } from "./phibot/rebrand.js";
 import {
   phibotDoctorChecksOrRelaunch,
   registerPhibotCommands,
@@ -73,8 +74,8 @@ const DATA_DIR_OPTION_HELP =
 program.enablePositionalOptions();
 
 program
-  .name("paperclipai")
-  .description("Paperclip CLI — setup, diagnose, and configure your instance")
+  .name("phibot")
+  .description("Phi Bot : installation, diagnostic et exploitation de votre instance")
   .version(cliVersion);
 
 registerPhibotCommands(program);
@@ -304,7 +305,7 @@ async function main(): Promise<void> {
     await program.parseAsync();
   } catch (err) {
     failed = true;
-    console.error(err instanceof Error ? err.message : String(err));
+    console.error(rebrandCliText(err instanceof Error ? err.message : String(err)));
   } finally {
     await flushTelemetry();
   }
