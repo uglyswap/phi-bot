@@ -8,7 +8,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..");
 const manifestPath = join(repoRoot, "scripts", "release-package-manifest.json");
 const roots = ["packages", "server", "ui", "cli"];
-const CHANNEL_ENTRYPOINT_PACKAGE = "paperclipai";
+const CHANNEL_ENTRYPOINT_PACKAGE = "@phi-code-admin/phi-bot";
 
 function readJson(filePath) {
   return JSON.parse(readFileSync(filePath, "utf8"));

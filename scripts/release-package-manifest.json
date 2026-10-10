@@ -60,6 +60,11 @@
     "publishFromCi": true
   },
   {
+    "dir": "packages/adapters/phi-local",
+    "name": "@paperclipai/adapter-phi-local",
+    "publishFromCi": true
+  },
+  {
     "dir": "packages/adapters/openclaw-gateway",
     "name": "@paperclipai/adapter-openclaw-gateway",
     "publishFromCi": true
@@ -101,7 +106,7 @@
   },
   {
     "dir": "cli",
-    "name": "paperclipai",
+    "name": "@phi-code-admin/phi-bot",
     "publishFromCi": true
   },
   {

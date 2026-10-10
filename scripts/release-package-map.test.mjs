@@ -27,7 +27,7 @@ test("release package list only contains CI-enrolled packages", () => {
 test("release package list publishes the installable channel entrypoint last", () => {
   const enabledPackages = getReleasePackages();
 
-  assert.equal(enabledPackages.at(-1)?.name, "paperclipai");
+  assert.equal(enabledPackages.at(-1)?.name, "@phi-code-admin/phi-bot");
   assert.ok(enabledPackages.slice(0, -1).some((pkg) => pkg.name === "@paperclipai/server"));
 });
 
