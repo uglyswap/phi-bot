@@ -29,6 +29,16 @@ const mockSidebarPreferencesApi = vi.hoisted(() => ({
   updateCompanyOrder: vi.fn(),
 }));
 const mockNavigateTopLevel = vi.hoisted(() => vi.fn());
+// Phi Bot: the upstream cases run with company creation enabled; one case turns
+// the single-organization switch on.
+const phibotFlags = vi.hoisted(() => ({ singleOrganization: false }));
+
+vi.mock("@/lib/phibot-llm", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/phibot-llm")>()),
+  get PHIBOT_SINGLE_ORGANIZATION() {
+    return phibotFlags.singleOrganization;
+  },
+}));
 
 vi.mock("@/api/auth", () => ({
   authApi: mockAuthApi,
@@ -166,6 +176,7 @@ describe("SidebarCompanyMenu", () => {
     container.remove();
     document.body.innerHTML = "";
     vi.clearAllMocks();
+    phibotFlags.singleOrganization = false;
   });
 
   function renderMenu(options: { cloud?: boolean; health?: unknown; production?: boolean } = {}) {
@@ -602,6 +613,18 @@ describe("SidebarCompanyMenu", () => {
     act(() => {
       root.unmount();
     });
+  });
+
+  it.each([false, true])("hides company creation on a single-organization Phi Bot install (production=%s)", async (production) => {
+    phibotFlags.singleOrganization = true;
+    const { root } = renderMenu({ production });
+    await flushReact();
+    await flushReact();
+    await openMenu(`Open Acme Labs ${production ? "company" : "organization"} switcher`);
+    expect(document.body.textContent).toContain("Anachronist Wiki");
+    expect(document.body.textContent).not.toContain("Create organization");
+    expect(mockOpenOnboarding).not.toHaveBeenCalled();
+    act(() => root.unmount());
   });
 
   describe("in Paperclip Cloud", () => {

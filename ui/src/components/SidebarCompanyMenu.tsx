@@ -38,6 +38,7 @@ import { useHiddenSettings } from "@/hooks/useHiddenSettings";
 import { useCompanyOrder } from "@/hooks/useCompanyOrder";
 import { useSignOut } from "@/hooks/useSignOut";
 import { queryKeys } from "@/lib/queryKeys";
+import { PHIBOT_SINGLE_ORGANIZATION } from "@/lib/phibot-llm";
 import { cn, SIDEBAR_RAIL_HIDDEN_LABEL } from "@/lib/utils";
 import { useSidebar } from "../context/SidebarContext";
 import { CompanyPatternIcon } from "./CompanyPatternIcon";
@@ -196,7 +197,7 @@ function BuiltinCompanyMenu({ open: controlledOpen, onOpenChange }: SidebarCompa
   const switcherNoun = "organization";
   const currentName = selectedCompany?.name ?? null;
   // Managed hosts forbid local company creation. Their extension owns that action.
-  const companyCreationManaged = Boolean(useCloudInstance());
+  const companyCreationManaged = Boolean(useCloudInstance()) || PHIBOT_SINGLE_ORGANIZATION;
 
   const signOutMutation = useSignOut({ onSignedOut: closeNavigationChrome });
 

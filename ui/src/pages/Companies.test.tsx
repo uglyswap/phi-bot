@@ -13,6 +13,16 @@ const mockCompaniesApi = vi.hoisted(() => ({
   remove: vi.fn(),
 }));
 const mockOpenOnboarding = vi.hoisted(() => vi.fn());
+// Phi Bot: the upstream cases run with company creation enabled; one case turns
+// the single-organization switch on.
+const phibotFlags = vi.hoisted(() => ({ singleOrganization: false }));
+
+vi.mock("../lib/phibot-llm", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../lib/phibot-llm")>()),
+  get PHIBOT_SINGLE_ORGANIZATION() {
+    return phibotFlags.singleOrganization;
+  },
+}));
 
 vi.mock("../api/companies", () => ({
   companiesApi: mockCompaniesApi,
@@ -80,6 +90,7 @@ describe("Companies page", () => {
     container.remove();
     document.body.innerHTML = "";
     vi.clearAllMocks();
+    phibotFlags.singleOrganization = false;
   });
 
   async function renderPage({ cloud }: { cloud?: boolean } = {}) {
@@ -104,6 +115,18 @@ describe("Companies page", () => {
     const root = await renderPage();
 
     expect(container.textContent).toContain("New Organization");
+
+    act(() => {
+      root.unmount();
+    });
+  });
+
+  it("hides the company wizard on a single-organization Phi Bot install", async () => {
+    phibotFlags.singleOrganization = true;
+    const root = await renderPage();
+
+    expect(container.textContent).not.toContain("New Organization");
+    expect(container.textContent).toContain("Acme Labs");
 
     act(() => {
       root.unmount();
