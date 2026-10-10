@@ -1,0 +1,258 @@
+ca-certificates:
+  Installed: (none)
+  Candidate: 20260601~24.04.1
+  Version table:
+     20260601~24.04.1 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+        500 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+     20240203 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+curl:
+  Installed: (none)
+  Candidate: 8.5.0-2ubuntu10.15
+  Version table:
+     8.5.0-2ubuntu10.15 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+        500 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+     8.5.0-2ubuntu10 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+tar:
+  Installed: 1.35+dfsg-3ubuntu0.4
+  Candidate: 1.35+dfsg-3ubuntu0.4
+  Version table:
+ *** 1.35+dfsg-3ubuntu0.4 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+        500 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+        100 /var/lib/dpkg/status
+     1.35+dfsg-3build1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+unzip:
+  Installed: (none)
+  Candidate: 6.0-28ubuntu4.1
+  Version table:
+     6.0-28ubuntu4.1 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+        500 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+     6.0-28ubuntu4 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+git:
+  Installed: (none)
+  Candidate: 1:2.43.0-1ubuntu7.3
+  Version table:
+     1:2.43.0-1ubuntu7.3 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+        500 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+     1:2.43.0-1ubuntu7 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+ripgrep:
+  Installed: (none)
+  Candidate: 14.1.0-1
+  Version table:
+     14.1.0-1 500
+        500 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages
+fd-find:
+  Installed: (none)
+  Candidate: 9.0.0-1
+  Version table:
+     9.0.0-1 500
+        500 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages
+python3:
+  Installed: (none)
+  Candidate: 3.12.3-0ubuntu2.1
+  Version table:
+     3.12.3-0ubuntu2.1 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+        500 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+     3.12.3-0ubuntu1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+jq:
+  Installed: (none)
+  Candidate: 1.7.1-3ubuntu0.24.04.2
+  Version table:
+     1.7.1-3ubuntu0.24.04.2 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+        500 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+     1.7.1-3build1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+openssh-client:
+  Installed: (none)
+  Candidate: 1:9.6p1-3ubuntu13.19
+  Version table:
+     1:9.6p1-3ubuntu13.19 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+        500 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+     1:9.6p1-3ubuntu13 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+xvfb:
+  Installed: (none)
+  Candidate: 2:21.1.12-1ubuntu1.8
+  Version table:
+     2:21.1.12-1ubuntu1.8 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages
+     2:21.1.12-1ubuntu1.5 500
+        500 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages
+     2:21.1.12-1ubuntu1 500
+        500 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages
+libgtk-3-0t64:
+  Installed: (none)
+  Candidate: 3.24.41-4ubuntu1.3
+  Version table:
+     3.24.41-4ubuntu1.3 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+     3.24.41-4ubuntu1.1 500
+        500 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+     3.24.41-4ubuntu1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libgtk-3-0:
+  Installed: (none)
+  Candidate: (none)
+  Version table:
+libdbus-glib-1-2:
+  Installed: (none)
+  Candidate: 0.112-3build2
+  Version table:
+     0.112-3build2 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libxt6t64:
+  Installed: (none)
+  Candidate: 1:1.2.1-1.2build1
+  Version table:
+     1:1.2.1-1.2build1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libxt6:
+  Installed: (none)
+  Candidate: (none)
+  Version table:
+libasound2t64:
+  Installed: (none)
+  Candidate: 1.2.11-1ubuntu0.3
+  Version table:
+     1.2.11-1ubuntu0.3 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+        500 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+     1.2.11-1build2 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libasound2:
+  Installed: (none)
+  Candidate: (none)
+  Version table:
+libx11-xcb1:
+  Installed: (none)
+  Candidate: 2:1.8.7-1build1
+  Version table:
+     2:1.8.7-1build1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libxcomposite1:
+  Installed: (none)
+  Candidate: 1:0.4.5-1build3
+  Version table:
+     1:0.4.5-1build3 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libxcursor1:
+  Installed: (none)
+  Candidate: 1:1.2.1-1build1
+  Version table:
+     1:1.2.1-1build1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libxdamage1:
+  Installed: (none)
+  Candidate: 1:1.1.6-1build1
+  Version table:
+     1:1.1.6-1build1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libxfixes3:
+  Installed: (none)
+  Candidate: 1:6.0.0-2build1
+  Version table:
+     1:6.0.0-2build1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libxi6:
+  Installed: (none)
+  Candidate: 2:1.8.1-1build1
+  Version table:
+     2:1.8.1-1build1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libxrandr2:
+  Installed: (none)
+  Candidate: 2:1.5.2-2build1
+  Version table:
+     2:1.5.2-2build1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libxrender1:
+  Installed: (none)
+  Candidate: 1:0.9.10-1.1build1
+  Version table:
+     1:0.9.10-1.1build1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libxss1:
+  Installed: (none)
+  Candidate: 1:1.2.3-1build3
+  Version table:
+     1:1.2.3-1build3 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libxtst6:
+  Installed: (none)
+  Candidate: 2:1.2.3-1.1build1
+  Version table:
+     2:1.2.3-1.1build1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libegl1:
+  Installed: (none)
+  Candidate: 1.7.0-1build1
+  Version table:
+     1.7.0-1build1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libgl1-mesa-dri:
+  Installed: (none)
+  Candidate: 25.2.8-0ubuntu0.24.04.4
+  Version table:
+     25.2.8-0ubuntu0.24.04.4 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+     25.2.8-0ubuntu0.24.04.2 500
+        500 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+     24.0.5-1ubuntu1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+libgbm1:
+  Installed: (none)
+  Candidate: 25.2.8-0ubuntu0.24.04.4
+  Version table:
+     25.2.8-0ubuntu0.24.04.4 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+     25.2.8-0ubuntu0.24.04.2 500
+        500 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages
+     24.0.5-1ubuntu1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+fonts-liberation:
+  Installed: (none)
+  Candidate: 1:2.1.5-3
+  Version table:
+     1:2.1.5-3 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+fonts-noto-color-emoji:
+  Installed: (none)
+  Candidate: 2.047-0ubuntu0.24.04.1
+  Version table:
+     2.047-0ubuntu0.24.04.1 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+     2.042-1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+fonts-wqy-zenhei:
+  Installed: (none)
+  Candidate: 0.9.45-8
+  Version table:
+     0.9.45-8 500
+        500 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages
+fontconfig:
+  Installed: (none)
+  Candidate: 2.15.0-1.1ubuntu2
+  Version table:
+     2.15.0-1.1ubuntu2 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
+nftables:
+  Installed: (none)
+  Candidate: 1.0.9-1ubuntu0.1
+  Version table:
+     1.0.9-1ubuntu0.1 500
+        500 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages
+     1.0.9-1build1 500
+        500 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages
