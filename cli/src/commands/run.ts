@@ -251,8 +251,13 @@ async function importServerEntry(): Promise<StartedServer> {
   }
 }
 
-function shouldGenerateBootstrapInviteAfterStart(config: PaperclipConfig): boolean {
-  return config.server.deploymentMode === "authenticated" && config.database.mode === "embedded-postgres";
+export function shouldGenerateBootstrapInviteAfterStart(config: PaperclipConfig): boolean {
+  return (
+    config.server.deploymentMode === "authenticated" &&
+    config.database.mode === "embedded-postgres" &&
+    // Phi Bot (patch P5): a service run never writes a bootstrap link to the journal.
+    process.env.PAPERCLIP_SERVICE_MANAGED !== "1"
+  );
 }
 
 async function startServerFromModule(mod: unknown, label: string): Promise<StartedServer> {
