@@ -28,7 +28,7 @@ vi.mock("../api/auth", () => ({
   authApi: {
     getSession: () => getSessionMock(),
     signInEmail: (input: unknown) => signInEmailMock(input),
-    signUpEmail: (input: unknown) => signUpEmailMock(input),
+    signUpEmail: (input: unknown, options?: unknown) => signUpEmailMock(input, options),
   },
 }));
 
@@ -243,11 +243,14 @@ describe("InviteLandingPage", () => {
     await flushReact();
     await flushReact();
 
-    expect(signUpEmailMock).toHaveBeenCalledWith({
-      name: "Jane Example",
-      email: "jane@example.com",
-      password: "supersecret",
-    });
+    expect(signUpEmailMock).toHaveBeenCalledWith(
+      {
+        name: "Jane Example",
+        email: "jane@example.com",
+        password: "supersecret",
+      },
+      { inviteToken: "pcp_invite_test" },
+    );
     expect(container.textContent).toContain("An account already exists for jane@example.com. Sign in below to continue with this invite.");
     expect(container.querySelector('input[name="name"]')).toBeNull();
     expect(container.textContent).toContain("Sign in to continue");
@@ -531,11 +534,14 @@ describe("InviteLandingPage", () => {
     await flushReact();
     await flushReact();
 
-    expect(signUpEmailMock).toHaveBeenCalledWith({
-      name: "Jane Example",
-      email: "jane@example.com",
-      password: "supersecret",
-    });
+    expect(signUpEmailMock).toHaveBeenCalledWith(
+      {
+        name: "Jane Example",
+        email: "jane@example.com",
+        password: "supersecret",
+      },
+      { inviteToken: "pcp_invite_test" },
+    );
     expect(acceptInviteMock).toHaveBeenCalledWith("pcp_invite_test", { requestType: "human" });
     expect(setSelectedCompanyIdMock).toHaveBeenCalledWith("company-1", { source: "manual" });
     expect(queryClient.getQueryState(queryKeys.access.currentBoardAccess)?.isInvalidated).toBe(true);

@@ -112,13 +112,17 @@ function logAuthHttpError(method: string, path: string, status: number, statusTe
   });
 }
 
-async function authPost(path: string, body: Record<string, unknown>): Promise<unknown> {
+async function authPost(
+  path: string,
+  body: Record<string, unknown>,
+  extraHeaders: Record<string, string> = {},
+): Promise<unknown> {
   let res: Response;
   try {
     res = await fetch(`/api/auth${path}`, {
       method: "POST",
       credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...extraHeaders },
       body: JSON.stringify(body),
     });
   } catch (networkError) {
@@ -175,8 +179,19 @@ export const authApi = {
     await authPost("/sign-in/email", input);
   },
 
-  signUpEmail: async (input: { name: string; email: string; password: string }) => {
-    await authPost("/sign-up/email", input);
+  signUpEmail: async (
+    input: { name: string; email: string; password: string },
+    options: { inviteToken?: string } = {},
+  ) => {
+    // Phi Bot (patch P3): with PHIBOT_INVITE_ONLY_SIGNUP=true the server only
+    // accepts a sign-up that carries a usable invite token in this header.
+    const inviteToken = options.inviteToken?.trim();
+    await authPost("/sign-up/email", input, inviteToken ? { "X-Phibot-Invite-Token": inviteToken } : {});
+  },
+
+  /** Phi Bot: Better Auth password change; other sessions are revoked. */
+  changePassword: async (input: { currentPassword: string; newPassword: string }) => {
+    await authPost("/change-password", { ...input, revokeOtherSessions: true });
   },
 
   getProfile: async (): Promise<CurrentUserProfile> => {
