@@ -2733,7 +2733,9 @@ export function accessRoutes(
   router.post("/bootstrap/claim", async (req, res) => {
     if (
       opts.deploymentMode !== "authenticated" ||
-      opts.deploymentExposure !== "private"
+      opts.deploymentExposure !== "private" ||
+      // Phi Bot (patch P4): `phibot setup` creates the owner before any exposure.
+      process.env.PHIBOT_DISABLE_BROWSER_CLAIM === "true"
     ) {
       throw notFound("Browser first-admin claim is not available");
     }
