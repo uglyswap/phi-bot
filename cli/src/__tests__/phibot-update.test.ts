@@ -49,7 +49,7 @@ describe("phibot update (spec 13.1, reviews B2 and M3)", () => {
       "/usr/bin/npm view @phi-code-admin/phi-bot@latest version --registry=https://registry.npmjs.org",
       `runuser -u phibot -- env HOME=/var/lib/phibot PAPERCLIP_HOME=/var/lib/phibot/.paperclip PAPERCLIP_INSTANCE_ID=default /usr/bin/node ${JS} backup --full --output ${BACKUP}`,
       "systemctl stop phibot.service",
-      "/usr/bin/npm install -g @phi-code-admin/phi-bot@1.0.1 --registry=https://registry.npmjs.org --@phi-code-admin:registry=https://registry.npmjs.org --no-audit --no-fund --allow-scripts=better-sqlite3,@embedded-postgres/linux-x64",
+      "/usr/bin/npm install -g @phi-code-admin/phi-bot@1.0.1 --registry=https://registry.npmjs.org --@phi-code-admin:registry=https://registry.npmjs.org --no-audit --no-fund --allow-scripts=@embedded-postgres/linux-x64,@google/genai,@phi-code-admin/camoufox-js,@phi-code-admin/phi-code,better-sqlite3,cpu-features,onnxruntime-node,protobufjs,sharp,ssh2",
       `/usr/bin/node ${JS} setup --repair --yes`,
     ]);
     expect(context.logger.text()).toContain(`Phi Bot mis à jour : 1.0.0 vers 1.0.1. Sauvegarde préalable : ${BACKUP}`);

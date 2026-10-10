@@ -34,7 +34,7 @@ describe("npm install -g of Phi Bot (spec 5.4, 6.2 step 5)", () => {
       "--@phi-code-admin:registry=https://registry.npmjs.org",
       "--no-audit",
       "--no-fund",
-      "--allow-scripts=better-sqlite3,@embedded-postgres/linux-x64",
+      "--allow-scripts=@embedded-postgres/linux-x64,@google/genai,@phi-code-admin/camoufox-js,@phi-code-admin/phi-code,better-sqlite3,cpu-features,onnxruntime-node,protobufjs,sharp,ssh2",
     ]);
     expect(buildGlobalInstallEnv({ PATH: "/usr/bin" })).toEqual({
       PATH: "/usr/bin",
@@ -75,7 +75,7 @@ describe("npm install -g of Phi Bot (spec 5.4, 6.2 step 5)", () => {
     });
     const install = sys.calls.find((call) => call.args[0] === "install");
     expect(install?.line).toBe(
-      "/usr/bin/npm install -g @phi-code-admin/phi-bot@1.0.0 --registry=http://127.0.0.1:4873 --@phi-code-admin:registry=http://127.0.0.1:4873 --no-audit --no-fund --allow-scripts=better-sqlite3,@embedded-postgres/linux-x64",
+      "/usr/bin/npm install -g @phi-code-admin/phi-bot@1.0.0 --registry=http://127.0.0.1:4873 --@phi-code-admin:registry=http://127.0.0.1:4873 --no-audit --no-fund --allow-scripts=@embedded-postgres/linux-x64,@google/genai,@phi-code-admin/camoufox-js,@phi-code-admin/phi-code,better-sqlite3,cpu-features,onnxruntime-node,protobufjs,sharp,ssh2",
     );
     expect(install?.options?.env?.PHI_SKIP_POSTINSTALL).toBe("1");
     expect(install?.options?.inherit).toBe(true);

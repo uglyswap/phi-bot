@@ -39,11 +39,12 @@ export const PHIBOT_DEFAULT_COMPANY_NAME = "Mon entreprise";
 export const PHIBOT_MIN_PASSWORD_LENGTH = 12;
 export const PHIBOT_DEFAULT_NPM_REGISTRY = "https://registry.npmjs.org";
 /**
- * Install scripts allowed by `npm install -g` (spec 5.4): the ones Phi Bot cannot run without
- * (prebuilt better-sqlite3 binary, symlinks of the embedded Postgres libraries). Plan E2 completes
- * this list from npm's warnings on the published archive.
+ * Install scripts allowed by `npm install -g` (spec 5.4): every package of the published archive
+ * whose install scripts npm 11 reports on linux-x64, among them the ones Phi Bot cannot run without
+ * (prebuilt better-sqlite3 binary, symlinks of the embedded Postgres libraries). scripts/phibot-pack.mjs
+ * recomputes this list from the npm-shrinkwrap.json of each build and fails when it differs.
  */
-export const PHIBOT_NPM_ALLOW_SCRIPTS = ["better-sqlite3", "@embedded-postgres/linux-x64"] as const;
+export const PHIBOT_NPM_ALLOW_SCRIPTS = ["@embedded-postgres/linux-x64", "@google/genai", "@phi-code-admin/camoufox-js", "@phi-code-admin/phi-code", "better-sqlite3", "cpu-features", "onnxruntime-node", "protobufjs", "sharp", "ssh2"] as const;
 /** Environment of the root `npm install -g` (spec 6.2 step 5). */
 export const PHIBOT_NPM_INSTALL_ENV = {
   CAMOUFOX_SKIP_DOWNLOAD: "1",
