@@ -1,0 +1,46 @@
+# Phi Bot en Docker (spécification, section 14).
+# Variables lues dans le fichier .env placé à côté de ce fichier (toutes facultatives) :
+#   PHIBOT_VERSION                version de l'image (défaut : latest)
+#   PAPERCLIP_PUBLIC_URL          URL publique (défaut : http://localhost:3100)
+#   PAPERCLIP_ALLOWED_HOSTNAMES   noms d'hôte autorisés, séparés par des virgules
+#   PAPERCLIP_AUTH_BASE_URL_MODE  explicit pour passer à un domaine après le premier démarrage
+#   PHIBOT_DOMAIN                 domaine servi en HTTPS par Caddy (profil https)
+#   COMPOSE_PROFILES              https pour démarrer Caddy avec Phi Bot
+name: phibot
+
+services:
+  phibot:
+    image: ghcr.io/uglyswap/phi-bot:${PHIBOT_VERSION:-latest}
+    restart: unless-stopped
+    shm_size: "1gb"
+    stop_grace_period: 60s
+    ports:
+      - "127.0.0.1:3100:3100"
+    environment:
+      PAPERCLIP_PUBLIC_URL: ${PAPERCLIP_PUBLIC_URL:-http://localhost:3100}
+      PAPERCLIP_ALLOWED_HOSTNAMES: ${PAPERCLIP_ALLOWED_HOSTNAMES:-}
+      PAPERCLIP_AUTH_BASE_URL_MODE: ${PAPERCLIP_AUTH_BASE_URL_MODE:-}
+    volumes:
+      - phibot-data:/var/lib/phibot
+
+  caddy:
+    image: caddy:2.11.7@sha256:f2a1290d0463aad60660d4ec134943f183ee2a5f6c3eb7bf32dd984f2f020772
+    profiles: ["https"]
+    restart: unless-stopped
+    depends_on:
+      - phibot
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      PHIBOT_DOMAIN: ${PHIBOT_DOMAIN:-}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  phibot-data:
+  caddy-data:
+  caddy-config:

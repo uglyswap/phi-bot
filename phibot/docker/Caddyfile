@@ -1,0 +1,6 @@
+# Phi Bot : HTTPS automatique du profil « https » de docker-compose.yml.
+# Le domaine vient de la variable PHIBOT_DOMAIN (fichier .env de Docker Compose).
+{$PHIBOT_DOMAIN} {
+	header Strict-Transport-Security "max-age=31536000"
+	reverse_proxy phibot:3100
+}
