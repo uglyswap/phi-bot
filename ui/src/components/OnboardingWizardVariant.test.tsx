@@ -13,8 +13,8 @@ vi.mock("@/api/instanceSettings", () => ({
   instanceSettingsApi: mockInstanceSettingsApi,
 }));
 
-vi.mock("./OnboardingWizard", () => ({
-  OnboardingWizard: () => <div data-testid="wizard-capsule" />,
+vi.mock("./phibot/PhiBotSetup", () => ({
+  PhiBotSetup: () => <div data-testid="wizard-capsule" />,
 }));
 
 describe("OnboardingWizardVariant (PAP-138)", () => {

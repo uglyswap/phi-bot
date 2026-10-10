@@ -1,10 +1,9 @@
-import { OnboardingWizard } from "./OnboardingWizard";
+import { PhiBotSetup } from "./phibot/PhiBotSetup";
 
 /**
- * Default onboarding wizard. Conference-room chat is now the only surface left
- * behind `enableConferenceRoomChat`; onboarding stays available without that
- * experimental flag.
+ * Phi Bot: the first-run setup replaces the Paperclip onboarding wizard.
+ * The original wizard (./OnboardingWizard) stays in the tree, unused.
  */
 export function OnboardingWizardVariant() {
-  return <OnboardingWizard />;
+  return <PhiBotSetup />;
 }
