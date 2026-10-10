@@ -31,6 +31,8 @@ export async function doctor(opts: {
   config?: string;
   repair?: boolean;
   yes?: boolean;
+  /** Phi Bot (spec 13.5): server checks, passed only by the `doctor` command, never by `run`. */
+  extraChecks?: Array<() => Promise<CheckResult>>;
 }): Promise<{ passed: number; warned: number; failed: number }> {
   await printUpdateNotice(opts.config);
   printPaperclipCliBanner();
@@ -136,6 +138,13 @@ export async function doctor(opts: {
 
   // 11. Background service checks
   for (const result of await serviceHealthChecks(config)) {
+    results.push(result);
+    printResult(result);
+  }
+
+  // 12. Phi Bot server checks
+  for (const check of opts.extraChecks ?? []) {
+    const result = await check();
     results.push(result);
     printResult(result);
   }
