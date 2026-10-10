@@ -1,10 +1,10 @@
 {
-  "name": "paperclipai",
+  "name": "@phi-code-admin/phi-bot",
   "version": "0.3.1",
-  "description": "Paperclip CLI — orchestrate AI agent teams to run a business",
+  "description": "Phi Bot : équipe d'agents IA auto-hébergée, moteur phi",
   "type": "module",
   "bin": {
-    "paperclipai": "./dist/index.js"
+    "phibot": "./dist/index.js"
   },
   "keywords": [
     "paperclip",
@@ -16,12 +16,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/paperclipai/paperclip",
+    "url": "https://github.com/uglyswap/phi-bot",
     "directory": "cli"
   },
-  "homepage": "https://github.com/paperclipai/paperclip",
+  "homepage": "https://github.com/uglyswap/phi-bot",
   "bugs": {
-    "url": "https://github.com/paperclipai/paperclip/issues"
+    "url": "https://github.com/uglyswap/phi-bot/issues"
   },
   "files": [
     "dist"
