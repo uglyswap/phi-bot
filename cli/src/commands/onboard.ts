@@ -710,7 +710,8 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
     server,
     auth,
     telemetry: {
-      enabled: true,
+      // Phi Bot (patch P8): product telemetry is off.
+      enabled: false,
     },
     storage,
     secrets,

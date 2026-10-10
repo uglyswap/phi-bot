@@ -81,6 +81,6 @@ export function resolveTelemetryConfig(
     return { enabled: false, ...caps };
   }
 
-  const endpoint = process.env.PAPERCLIP_TELEMETRY_ENDPOINT || undefined;
-  return { enabled: true, endpoint, ...caps };
+  // Phi Bot (patch P8): no product telemetry, whatever the config file says.
+  return { enabled: false, ...caps };
 }
