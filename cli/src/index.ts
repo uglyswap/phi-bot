@@ -51,6 +51,12 @@ import { installCommand } from "./commands/install.js";
 import { uninstallCommand } from "./commands/uninstall.js";
 import { updateCommand } from "./commands/update.js";
 import { registerServiceCommands } from "./commands/service.js";
+import {
+  phibotDoctorChecksOrRelaunch,
+  registerPhibotCommands,
+  relaunchUnderPhibotIfNeeded,
+  runPhibotUninstallIfServer,
+} from "./commands/phibot-commands.js";
 import { registerConnectionIntentCommands } from "./commands/client/connections.js";
 import {
   assertTestDriveDatabaseIsolation,
@@ -71,6 +77,8 @@ program
   .description("Paperclip CLI — setup, diagnose, and configure your instance")
   .version(cliVersion);
 
+registerPhibotCommands(program);
+
 program
   .command("install")
   .description("Install Paperclip into a managed per-user CLI store")
@@ -84,7 +92,12 @@ program
 program
   .command("uninstall")
   .description("Remove the managed CLI install while preserving user data")
-  .action(uninstallCommand);
+  .option("--purge", "Phi Bot : effacer aussi /var/lib/phibot et le compte phibot (confirmation tapée)")
+  .option("-y, --yes", "Phi Bot : ne pas demander de confirmation")
+  .action(async (opts) => {
+    if (await runPhibotUninstallIfServer(opts)) return;
+    await uninstallCommand();
+  });
 
 program
   .command("update")
@@ -102,6 +115,7 @@ program
   .action(updateCommand);
 
 program.hook("preAction", async (_thisCommand, actionCommand) => {
+  await relaunchUnderPhibotIfNeeded(actionCommand);
   const options = actionCommand.optsWithGlobals() as DataDirOptionLike & TestDriveOptions;
   let dataDirOptions: DataDirOptionLike = options;
   if (actionCommand.name() === "test-drive") {
@@ -147,7 +161,10 @@ program
   .alias("--fix")
   .option("-y, --yes", "Skip repair confirmation prompts")
   .action(async (opts) => {
-    await doctor(opts);
+    const extraChecks = await phibotDoctorChecksOrRelaunch(opts);
+    if (extraChecks === null) return;
+    const summary = await doctor({ ...opts, extraChecks });
+    if (extraChecks.length > 0 && summary.failed > 0) process.exitCode = 1;
   });
 
 program
