@@ -5,6 +5,7 @@ import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { resolvePaperclipHomeDir, resolvePaperclipInstanceId } from "../config/home.js";
+import { SystemdSystemServiceManager, phibotSystemUnitExists } from "../phibot/system-service-manager.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -345,10 +346,14 @@ export class LaunchdServiceManager implements ServiceManager {
 
 export type ServiceManagerDetection = { supported: true; manager: ServiceManager } | { supported: false; reason: string };
 
-export async function detectServiceManager(input: { instanceId?: string; platform?: NodeJS.Platform; runner?: CommandRunner } = {}): Promise<ServiceManagerDetection> {
+export async function detectServiceManager(input: { instanceId?: string; platform?: NodeJS.Platform; runner?: CommandRunner; systemUnitExists?: () => boolean } = {}): Promise<ServiceManagerDetection> {
   const instanceId = resolvePaperclipInstanceId(input.instanceId);
   const platform = input.platform ?? process.platform;
   const runner = input.runner ?? defaultCommandRunner;
+  // Phi Bot (spec 13.4): the system unit phibot.service takes priority over the user service.
+  if (platform === "linux" && (input.systemUnitExists ?? phibotSystemUnitExists)()) {
+    return { supported: true, manager: new SystemdSystemServiceManager(runner) };
+  }
   if (platform === "darwin") return { supported: true, manager: new LaunchdServiceManager(instanceId, runner) };
   if (platform !== "linux") return { supported: false, reason: `Service management is not supported on ${platform}. Use paperclipai run instead.` };
   try {
