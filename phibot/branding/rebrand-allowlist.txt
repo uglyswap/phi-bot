@@ -1,0 +1,23 @@
+# Exceptions of the Phi Bot UI rebranding (scripts/phibot-rebrand.mjs, spec section 10.2).
+# Format: <path relative to the repository root> | <text contained in the literal>
+# A literal of that file that contains that text keeps the word "Paperclip": it is
+# neither rewritten nor reported. An entry that matches nothing fails the run.
+
+# Data, not UI text: the server writes this exact comment body
+# (server/src/services/recovery/successful-run-handoff.ts) and
+# isSuccessfulRunHandoffComment() compares it with ===.
+ui/src/lib/successful-run-handoff.ts | Paperclip needs a disposition before this issue can continue.
+
+# Data, not UI text: same server notice, compared by isSuccessfulRunHandoffEscalationComment().
+ui/src/lib/successful-run-handoff.ts | Paperclip could not resolve this issue's missing disposition automatically.
+
+# Attribution written into exported company packages, linked to https://paperclip.ing.
+ui/src/pages/CompanyExport.tsx | See [Paperclip](https://paperclip.ing) for more information.
+ui/src/pages/CompanyExport.tsx | Exported from [Paperclip](https://paperclip.ing) on
+
+# Instructions for an external agent, with the technical names PAPERCLIP_API_URL and
+# PAPERCLIP_API_KEY (spec 10.3: agent-facing texts keep the technical name).
+ui/src/lib/agent-onboarding-prompt.ts | Read the onboarding.txt document from the first reachable URL above.
+
+# Prompt pasted into an external assistant; it names the technical site paperclip.ing.
+ui/src/pages/apps/chat/GitHubSetupPrompt.tsx | Help me set up a GitHub review bot in Paperclip.
