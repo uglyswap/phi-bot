@@ -2,7 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import * as p from "@clack/prompts";
 import pc from "picocolors";
 import { and, eq, gt, isNull } from "drizzle-orm";
-import { createDb, instanceUserRoles, invites } from "@paperclipai/db";
+import { createDb, instanceUserRoles, invites, type Db } from "@paperclipai/db";
 import { inferBindModeFromHost } from "@paperclipai/shared";
 import { loadPaperclipEnvFile } from "../config/env.js";
 import { readConfig, resolveConfigPath } from "../config/store.js";
@@ -13,6 +13,44 @@ function hashToken(token: string) {
 
 function createInviteToken() {
   return `pcp_bootstrap_${randomBytes(24).toString("hex")}`;
+}
+
+/**
+ * Revokes the active bootstrap invites, inserts a new one and returns its clear token.
+ * Shared by `auth bootstrap-ceo` (which prints the link) and Phi Bot's `setup` / `owner create`
+ * (which accept it on the loopback without ever printing it).
+ */
+export async function createBootstrapCeoInvite(
+  db: Db,
+  opts: { expiresHours?: number } = {},
+): Promise<{ token: string; expiresAt: Date }> {
+  const now = new Date();
+  await db
+    .update(invites)
+    .set({ revokedAt: now, updatedAt: now })
+    .where(
+      and(
+        eq(invites.inviteType, "bootstrap_ceo"),
+        isNull(invites.revokedAt),
+        isNull(invites.acceptedAt),
+        gt(invites.expiresAt, now),
+      ),
+    );
+
+  const token = createInviteToken();
+  const expiresHours = Math.max(1, Math.min(24 * 30, opts.expiresHours ?? 72));
+  const created = await db
+    .insert(invites)
+    .values({
+      inviteType: "bootstrap_ceo",
+      tokenHash: hashToken(token),
+      allowedJoinTypes: "human",
+      expiresAt: new Date(Date.now() + expiresHours * 60 * 60 * 1000),
+      invitedByUserId: "system",
+    })
+    .returning()
+    .then((rows) => rows[0]);
+  return { token, expiresAt: created.expiresAt };
 }
 
 function resolveDbUrl(configPath?: string, explicitDbUrl?: string) {
@@ -97,35 +135,10 @@ export async function bootstrapCeoInvite(opts: {
       return;
     }
 
-    const now = new Date();
-    await db
-      .update(invites)
-      .set({ revokedAt: now, updatedAt: now })
-      .where(
-        and(
-          eq(invites.inviteType, "bootstrap_ceo"),
-          isNull(invites.revokedAt),
-          isNull(invites.acceptedAt),
-          gt(invites.expiresAt, now),
-        ),
-      );
-
-    const token = createInviteToken();
-    const expiresHours = Math.max(1, Math.min(24 * 30, opts.expiresHours ?? 72));
-    const created = await db
-      .insert(invites)
-      .values({
-        inviteType: "bootstrap_ceo",
-        tokenHash: hashToken(token),
-        allowedJoinTypes: "human",
-        expiresAt: new Date(Date.now() + expiresHours * 60 * 60 * 1000),
-        invitedByUserId: "system",
-      })
-      .returning()
-      .then((rows) => rows[0]);
+    const created = await createBootstrapCeoInvite(db, { expiresHours: opts.expiresHours });
 
     const baseUrl = resolveBaseUrl(configPath, opts.baseUrl);
-    const inviteUrl = `${baseUrl}/invite/${token}`;
+    const inviteUrl = `${baseUrl}/invite/${created.token}`;
     p.log.success("Created bootstrap CEO invite.");
     p.log.message(`Invite URL: ${pc.cyan(inviteUrl)}`);
     p.log.message(`Expires: ${pc.dim(created.expiresAt.toISOString())}`);
