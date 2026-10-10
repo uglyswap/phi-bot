@@ -95,6 +95,12 @@ export const ADAPTER_SESSION_MANAGEMENT: Record<string, AdapterSessionManagement
     nativeContextManagement: "unknown",
     defaultSessionCompaction: DEFAULT_SESSION_COMPACTION_POLICY,
   },
+  phi_local: {
+    supportsSessionResume: true,
+    // phi compacts its own context (auto-compaction on by default).
+    nativeContextManagement: "confirmed",
+    defaultSessionCompaction: ADAPTER_MANAGED_SESSION_POLICY,
+  },
   hermes_local: {
     supportsSessionResume: true,
     nativeContextManagement: "confirmed",

@@ -905,6 +905,7 @@ const GIT_SENSITIVE_LOCAL_ADAPTER_TYPES = new Set([
   "kimi_local",
   "opencode_local",
   "pi_local",
+  "phi_local",
 ]);
 export { MAX_TURN_CONTINUATION_RETRY_REASON };
 export const MAX_TURN_CONTINUATION_WAKE_REASON = "max_turns_continuation_retry";
@@ -1289,6 +1290,7 @@ const SESSIONED_LOCAL_ADAPTERS = new Set([
   "kimi_local",
   "opencode_local",
   "pi_local",
+  "phi_local",
 ]);
 // Routes and the scheduler construct separate heartbeatService instances, but
 // they must agree on in-process adapter executions when reaping stale runs.

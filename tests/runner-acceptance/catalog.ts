@@ -13,7 +13,7 @@ import type {
   RunnerAcceptanceProfile,
 } from "./types.js";
 
-const excludedBuiltInAdapterTypes = new Set(["paperclip_runner", "pi_local"]);
+const excludedBuiltInAdapterTypes = new Set(["paperclip_runner", "pi_local", "phi_local"]);
 
 const directBuiltInAdapterTypes = [
   "acpx_local",

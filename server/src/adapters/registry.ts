@@ -130,6 +130,16 @@ import {
   listPiModels,
 } from "@paperclipai/adapter-pi-local/server";
 import { agentConfigurationDoc as piAgentConfigurationDoc } from "@paperclipai/adapter-pi-local";
+import {
+  execute as phiExecute,
+  listPhiSkills,
+  syncPhiSkills,
+  testEnvironment as phiTestEnvironment,
+  sessionCodec as phiSessionCodec,
+  listPhiModels,
+  refreshPhiModels,
+} from "@paperclipai/adapter-phi-local/server";
+import { agentConfigurationDoc as phiAgentConfigurationDoc } from "@paperclipai/adapter-phi-local";
 import { BUILTIN_ADAPTER_TYPES } from "./builtin-adapter-types.js";
 import { buildExternalAdapters } from "./plugin-loader.js";
 import { getDisabledAdapterTypes } from "../services/adapter-plugin-store.js";
@@ -861,6 +871,29 @@ const piLocalAdapter: ServerAdapterModule = {
   agentConfigurationDoc: piAgentConfigurationDoc,
 };
 
+// Phi Bot engine: phi runs on the Phi Bot server only (no sandbox install, so
+// no getRuntimeCommandSpec). phi >= 0.100.0 receives ctx.runtimeMcp through
+// PHI_MCP_CONFIG; older phi falls back to the PAPERCLIP_RUNTIME_TOOLS_* variables.
+const phiLocalAdapter: ServerAdapterModule = {
+  type: "phi_local",
+  runtimeToolDelivery: "native_mcp",
+  execute: phiExecute,
+  testEnvironment: phiTestEnvironment,
+  listSkills: listPhiSkills,
+  syncSkills: syncPhiSkills,
+  sessionCodec: phiSessionCodec,
+  sessionManagement: getAdapterSessionManagement("phi_local") ?? undefined,
+  supportsToolRefreshOnResume: true,
+  models: [],
+  listModels: listPhiModels,
+  refreshModels: refreshPhiModels,
+  supportsLocalAgentJwt: true,
+  supportsInstructionsBundle: true,
+  instructionsPathKey: "instructionsFilePath",
+  requiresMaterializedRuntimeSkills: true,
+  agentConfigurationDoc: phiAgentConfigurationDoc,
+};
+
 const adaptersByType = new Map<string, ServerAdapterModule>();
 
 // For builtin types that are overridden by an external adapter, we keep the
@@ -880,6 +913,7 @@ function registerBuiltInAdapters() {
     paperclipRunnerAdapter,
     openCodeLocalAdapter,
     piLocalAdapter,
+    phiLocalAdapter,
     cursorCloudAdapter,
     cursorLocalAdapter,
     geminiLocalAdapter,
