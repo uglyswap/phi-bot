@@ -1,0 +1,24 @@
+# Local npm registry of the Phi Bot end-to-end test (scripts/phibot-e2e-install.sh).
+# Verdaccio 6.10.4. The tested archive is published here; every other package,
+# earlier Phi Bot versions included, comes from registry.npmjs.org.
+storage: ./storage
+auth:
+  htpasswd:
+    file: ./htpasswd
+    max_users: 10
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+    timeout: 60s
+packages:
+  '@phi-code-admin/phi-bot':
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+  '**':
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+# The single package weighs about 55 MiB compressed (default limit: 10 MiB).
+max_body_size: 300mb
+log: { type: stdout, format: pretty, level: warn }

@@ -1,0 +1,12 @@
+# Blank systemd machine of the Phi Bot end-to-end test (spec 15.2): the base image plus only
+# systemd, dbus, sudo, curl and certificates. Everything else (Node.js, Phi Bot's system packages)
+# is installed by the test itself, as on a customer's server. Digest read on 2026-10-09.
+FROM debian:12@sha256:2c037a04925515fdd6ea85ea14a682d0e79931f5e9f5d07b6dbfc6ba12f9e858
+ENV container=docker DEBIAN_FRONTEND=noninteractive
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends systemd systemd-sysv dbus sudo curl ca-certificates \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* \
+ && systemctl mask systemd-firstboot.service systemd-udevd.service getty.target console-getty.service
+STOPSIGNAL SIGRTMIN+3
+CMD ["/sbin/init"]
