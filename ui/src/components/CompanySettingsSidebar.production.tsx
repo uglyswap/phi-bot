@@ -11,6 +11,7 @@ import {
   Puzzle,
   Shield,
   SlidersHorizontal,
+  Sparkles,
   Upload,
   UserRoundPen,
   Users,
@@ -29,6 +30,7 @@ import { useCloudInstance } from "@/hooks/useCloudInstance";
 import { useHiddenSettings } from "@/hooks/useHiddenSettings";
 import { usePluginSlots } from "@/plugins/slots";
 import { SidebarNavItem } from "./SidebarNavItem.production";
+import { phibotText } from "./phibot/phibot-text";
 
 /**
  * Sandbox-provider-only plugins (e.g. E2B, exe.dev, Modal) have no per-plugin
@@ -132,6 +134,7 @@ export function CompanySettingsSidebar() {
           {showPage("company.invites") && (
             <SidebarNavItem to="/company/settings/invites" label="Invites" icon={MailPlus} end />
           )}
+          <SidebarNavItem to="/company/settings/ai-provider" label={phibotText().settingsTitle} icon={Sparkles} end />
           {showPage("company.secrets") && (
             <SidebarNavItem to="/company/settings/secrets" label="Secrets" icon={KeyRound} end />
           )}

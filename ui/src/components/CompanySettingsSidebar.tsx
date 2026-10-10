@@ -9,6 +9,7 @@ import {
   Puzzle,
   Shield,
   SlidersHorizontal,
+  Sparkles,
   Upload,
   UserRoundPen,
   Users,
@@ -28,6 +29,7 @@ import { usePluginSlots } from "@/plugins/slots";
 import { SidebarNavItem } from "./SidebarNavItem";
 import { ContextualSidebarFrame } from "./ContextualSidebarFrame";
 import { primarySidebarStyles } from "./primary-sidebar-styles";
+import { phibotText } from "./phibot/phibot-text";
 
 /**
  * Sandbox-provider-only plugins (e.g. E2B, exe.dev, Modal) have no per-plugin
@@ -131,6 +133,7 @@ export function CompanySettingsSidebar() {
                 end
               />
             ))}
+          <SidebarNavItem to="/company/settings/ai-provider" label={phibotText().settingsTitle} icon={Sparkles} end />
           {showPage("company.secrets") && (
             <SidebarNavItem to="/company/settings/secrets" label="Secrets" icon={KeyRound} end />
           )}
