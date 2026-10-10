@@ -11,6 +11,7 @@ import {
   authVerifications,
 } from "@paperclipai/db";
 import type { Config } from "../config.js";
+import { createPhiBotInviteOnlySignupHook, isPhiBotInviteOnlySignupEnabled } from "./phibot-invite-signup.js";
 import { resolvePaperclipInstanceId } from "../home-paths.js";
 import {
   workspaceLoginHandoffPlugin,
@@ -281,6 +282,11 @@ export function createBetterAuthInstance(db: Db, config: Config, trustedOrigins:
       override: process.env.PAPERCLIP_AUTH_RATE_LIMIT_ENABLED,
     }),
     advanced: buildBetterAuthAdvancedOptions({ disableSecureCookies }),
+    // Phi Bot (patch P3): with PHIBOT_INVITE_ONLY_SIGNUP=true, /sign-up/email
+    // requires a usable invite token in the X-Phibot-Invite-Token header.
+    ...(isPhiBotInviteOnlySignupEnabled()
+      ? { hooks: { before: createPhiBotInviteOnlySignupHook(db) } }
+      : {}),
     // Registered only for a managed workspace instance: the plugin is what makes
     // `Open workspace` password-independent, and a control-plane instance that
     // was never handed a workspace key must not expose the exchange at all.
