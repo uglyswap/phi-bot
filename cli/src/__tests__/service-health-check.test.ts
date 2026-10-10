@@ -36,12 +36,12 @@ afterEach(() => {
 
 function managerFixture(active = true) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "paperclip-service-doctor-"));
-  const definitionPath = path.join(root, "paperclipai.service");
+  const definitionPath = path.join(root, "phibot-user.service");
   fs.writeFileSync(definitionPath, "unit");
   return {
     platform: "systemd" as const,
     instanceId: "default",
-    serviceName: "paperclipai.service",
+    serviceName: "phibot-user.service",
     definitionPath,
     renderDefinition: () => "unit",
     install: vi.fn(async () => ({ changed: false })),
@@ -51,7 +51,7 @@ function managerFixture(active = true) {
     restart: vi.fn(async () => undefined),
     status: vi.fn(async () => ({
       platform: "systemd" as const,
-      serviceName: "paperclipai.service",
+      serviceName: "phibot-user.service",
       installed: true,
       active,
       enabled: true,
@@ -170,7 +170,7 @@ describe("service runtime shim awareness", () => {
     return {
       platform: "launchd" as const,
       instanceId: "default",
-      serviceName: "ing.paperclip.paperclipai",
+      serviceName: "org.phibot.phibot",
       definitionPath: "/tmp/nonexistent-definition.plist",
       renderDefinition: () => "plist",
       install: vi.fn(async () => ({ changed: false })),
@@ -180,7 +180,7 @@ describe("service runtime shim awareness", () => {
       restart: vi.fn(async () => undefined),
       status: vi.fn(async () => ({
         platform: "launchd" as const,
-        serviceName: "ing.paperclip.paperclipai",
+        serviceName: "org.phibot.phibot",
         installed: true,
         active: false,
         enabled: true,
@@ -229,7 +229,7 @@ describe("service runtime shim awareness", () => {
     });
     const healthResult = results.find((r) => r.name === "Service health");
     expect(healthResult?.status).toBe("warn");
-    expect(healthResult?.message).toContain("but not from ing.paperclip.paperclipai");
+    expect(healthResult?.message).toContain("but not from org.phibot.phibot");
     const runtime = results.find((r) => r.name === "Service runtime");
     expect(runtime?.message).toContain("serving another Paperclip process");
   });

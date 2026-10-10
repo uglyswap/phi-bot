@@ -104,7 +104,7 @@ export async function channelsCommand(
     const version = entry.version ?? pc.yellow("unavailable");
     console.log(`  ${pc.bold(entry.channel.padEnd(8))} ${version}`);
     console.log(`  ${" ".repeat(8)} ${pc.dim(`${entry.cadence} — ${entry.audience}`)}`);
-    console.log(`  ${" ".repeat(8)} ${pc.dim(`npx paperclipai@${entry.distTag} onboard`)}`);
+    console.log(`  ${" ".repeat(8)} ${pc.dim(`npx @phi-code-admin/phi-bot@${entry.distTag} onboard`)}`);
     console.log("");
   }
 

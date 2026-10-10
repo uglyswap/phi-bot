@@ -82,7 +82,7 @@ export function detectInstallMode(executablePath = process.argv[1] ?? "", paths 
   if (manifest && isManagedExecutable(resolved, manifest, paths)) return "managed";
   const normalized = resolved.split(path.sep).join("/");
   if (normalized.includes("/.npm/_npx/") || normalized.includes("/node_modules/.cache/npx/")) return "npx";
-  if (normalized.includes("/node_modules/paperclipai/")) return "global-npm";
+  if (normalized.includes("/node_modules/@phi-code-admin/phi-bot/")) return "global-npm";
   let cursor = path.dirname(resolved);
   while (cursor !== path.dirname(cursor)) {
     if (fs.existsSync(path.join(cursor, ".git"))) return "source";
@@ -226,12 +226,12 @@ export async function updateCommand(options: UpdateOptions, overrides: Partial<D
   if (options.check) { emit(options, { mode, currentVersion: currentVersion ?? null, targetVersion, updateAvailable: comparison > 0, downgrade: comparison < 0, channel: request.channel }, comparison > 0 ? `Update available: ${targetVersion}` : comparison < 0 ? `Target ${targetVersion} is older than ${currentVersion}.` : `paperclipai ${targetVersion} is current.`); if (comparison > 0) process.exitCode = 10; return; }
   if (mode === "global-npm") {
     if (comparison < 0 && options.yes !== true) { const confirmed = await (overrides.confirm ?? defaultConfirm)(`Downgrade paperclipai from ${currentVersion} to ${targetVersion}?`); if (!confirmed) throw new Error("Downgrade cancelled. Re-run with --yes to confirm explicitly."); }
-    const args = ["install", "-g", `paperclipai@${targetVersion}`, `--registry=${PUBLIC_NPM_REGISTRY}`, `--@paperclipai:registry=${PUBLIC_NPM_REGISTRY}`]; console.log(`Running: npm ${args.join(" ")}`);
+    const args = ["install", "-g", `@phi-code-admin/phi-bot@${targetVersion}`, `--registry=${PUBLIC_NPM_REGISTRY}`, `--@paperclipai:registry=${PUBLIC_NPM_REGISTRY}`, `--@phi-code-admin:registry=${PUBLIC_NPM_REGISTRY}`]; console.log(`Running: npm ${args.join(" ")}`);
     if (!options.dryRun) {
       const npmConfigDir = fs.mkdtempSync(path.join(os.tmpdir(), "paperclip-npm-"));
       const npmUserConfigPath = path.join(npmConfigDir, "npmrc");
       try {
-        fs.writeFileSync(npmUserConfigPath, `registry=${PUBLIC_NPM_REGISTRY}\n@paperclipai:registry=${PUBLIC_NPM_REGISTRY}\n`, { mode: 0o600 });
+        fs.writeFileSync(npmUserConfigPath, `registry=${PUBLIC_NPM_REGISTRY}\n@paperclipai:registry=${PUBLIC_NPM_REGISTRY}\n@phi-code-admin:registry=${PUBLIC_NPM_REGISTRY}\n`, { mode: 0o600 });
         await runCommand("npm", args, {
           env: {
             ...process.env,

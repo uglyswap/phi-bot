@@ -58,7 +58,7 @@ describe("service definition generation", () => {
 
   it("generates a launchd agent with keepalive and instance logs", () => {
     const plist = renderLaunchdPlist({ instanceId: "team-a", shimPath: "/Users/alice/.local/bin/paperclipai", homeDir: "/Users/alice/.paperclip", stdoutPath: "/Users/alice/.paperclip/instances/team-a/logs/service.log", stderrPath: "/Users/alice/.paperclip/instances/team-a/logs/service.err.log" });
-    expect(plist).toContain("ing.paperclip.paperclipai.team-a");
+    expect(plist).toContain("org.phibot.phibot.team-a");
     expect(plist).toContain("<key>RunAtLoad</key><true/>");
     expect(plist).toContain("<key>KeepAlive</key><true/>");
     expect(plist).toContain("service.err.log");
@@ -117,7 +117,7 @@ describe("service adapter dispatch", () => {
   it("returns a foreground-run skip on unsupported hosts", async () => {
     const runner: CommandRunner = async () => { throw new Error("no bus"); };
     const detection = await detectServiceManager({ platform: "linux", instanceId: "default", runner });
-    expect(detection).toEqual({ supported: false, reason: expect.stringContaining("paperclipai run") });
+    expect(detection).toEqual({ supported: false, reason: expect.stringContaining("phibot run") });
   });
 });
 
@@ -127,21 +127,21 @@ describe("launchd lifecycle", () => {
     const calls: string[] = [];
     const runner: CommandRunner = async (command, args) => {
       calls.push([command, ...args].join(" "));
-      if (args[0] === "print-disabled") return { stdout: `\"ing.paperclip.paperclipai.team-a\" => true`, stderr: "" };
+      if (args[0] === "print-disabled") return { stdout: `\"org.phibot.phibot.team-a\" => true`, stderr: "" };
       return { stdout: "", stderr: "" };
     };
     const manager = new LaunchdServiceManager("team-a", runner, path.join(userHome, ".paperclip"), path.join(userHome, ".local/bin/paperclipai"), userHome);
 
     await manager.start();
 
-    expect(calls).toContain(`launchctl disable gui/${process.getuid?.() ?? 0}/ing.paperclip.paperclipai.team-a`);
-    expect(calls).not.toContain(`launchctl enable gui/${process.getuid?.() ?? 0}/ing.paperclip.paperclipai.team-a`);
+    expect(calls).toContain(`launchctl disable gui/${process.getuid?.() ?? 0}/org.phibot.phibot.team-a`);
+    expect(calls).not.toContain(`launchctl enable gui/${process.getuid?.() ?? 0}/org.phibot.phibot.team-a`);
   });
 
   it("preserves disabled state when the service name contains regex metacharacters", async () => {
     const userHome = await temporaryDirectory();
     const calls: string[] = [];
-    const serviceName = "ing.paperclip.paperclipai.team[qa]+";
+    const serviceName = "org.phibot.phibot.team[qa]+";
     const runner: CommandRunner = async (command, args) => {
       calls.push([command, ...args].join(" "));
       if (args[0] === "print-disabled") return { stdout: `"${serviceName}" => true`, stderr: "" };
@@ -167,8 +167,8 @@ describe("launchd lifecycle", () => {
     await manager.install({ startNow: false, startOnLogin: false });
     await manager.stop();
 
-    expect(calls).toContain(`launchctl disable gui/${process.getuid?.() ?? 0}/ing.paperclip.paperclipai.team-a`);
-    expect(calls).toContain(`launchctl bootout gui/${process.getuid?.() ?? 0}/ing.paperclip.paperclipai.team-a`);
+    expect(calls).toContain(`launchctl disable gui/${process.getuid?.() ?? 0}/org.phibot.phibot.team-a`);
+    expect(calls).toContain(`launchctl bootout gui/${process.getuid?.() ?? 0}/org.phibot.phibot.team-a`);
     expect(calls.some((call) => call.includes("launchctl kill"))).toBe(false);
   });
 
@@ -183,12 +183,12 @@ describe("launchd lifecycle", () => {
 
     await manager.uninstall();
 
-    expect(calls).toContain(`launchctl disable gui/${process.getuid?.() ?? 0}/ing.paperclip.paperclipai.team-a`);
+    expect(calls).toContain(`launchctl disable gui/${process.getuid?.() ?? 0}/org.phibot.phibot.team-a`);
   });
 });
 
 describe("single-writer guard", () => {
-  const activeManager = { status: async () => ({ active: true, serviceName: "paperclipai.service" }) } as unknown as ServiceManager;
+  const activeManager = { status: async () => ({ active: true, serviceName: "phibot-user.service" }) } as unknown as ServiceManager;
   const detector = async () => ({ supported: true as const, manager: activeManager });
 
   it("refuses a second foreground writer", async () => {

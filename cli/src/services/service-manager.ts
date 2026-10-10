@@ -75,7 +75,7 @@ function escapeRegExp(value: string): string {
 }
 
 export function resolveServiceShimPath(homeDir = os.homedir()): string {
-  return process.env.PAPERCLIP_SHIM_PATH?.trim() || path.join(homeDir, ".local", "bin", "paperclipai");
+  return process.env.PAPERCLIP_SHIM_PATH?.trim() || path.join(homeDir, ".local", "bin", "phibot");
 }
 
 // The installed definition, not the current environment, is the truth
@@ -118,11 +118,11 @@ export async function isExecutableFile(filePath: string): Promise<boolean> {
 }
 
 export function systemdServiceName(instanceId: string): string {
-  return instanceId === "default" ? "paperclipai.service" : `paperclipai-${instanceId}.service`;
+  return instanceId === "default" ? "phibot-user.service" : `phibot-user-${instanceId}.service`;
 }
 
 export function launchdServiceName(instanceId: string): string {
-  return instanceId === "default" ? "ing.paperclip.paperclipai" : `ing.paperclip.paperclipai.${instanceId}`;
+  return instanceId === "default" ? "org.phibot.phibot" : `org.phibot.phibot.${instanceId}`;
 }
 
 export function renderSystemdUnit(input: { instanceId: string; shimPath: string; homeDir: string }): string {
@@ -355,12 +355,12 @@ export async function detectServiceManager(input: { instanceId?: string; platfor
     return { supported: true, manager: new SystemdSystemServiceManager(runner) };
   }
   if (platform === "darwin") return { supported: true, manager: new LaunchdServiceManager(instanceId, runner) };
-  if (platform !== "linux") return { supported: false, reason: `Service management is not supported on ${platform}. Use paperclipai run instead.` };
+  if (platform !== "linux") return { supported: false, reason: `Service management is not supported on ${platform}. Use phibot run instead.` };
   try {
     await runner("systemctl", ["--user", "show-environment"]);
     return { supported: true, manager: new SystemdServiceManager(instanceId, runner) };
   } catch {
-    return { supported: false, reason: "No usable systemd user manager was detected (common in containers and WSL1). Use paperclipai run instead." };
+    return { supported: false, reason: "No usable systemd user manager was detected (common in containers and WSL1). Use phibot run instead." };
   }
 }
 
@@ -369,5 +369,5 @@ export async function assertForegroundRunAllowed(instanceId: string, force = fal
   const detection = await detector({ instanceId });
   if (!detection.supported) return;
   const status = await detection.manager.status();
-  if (status.active) throw new Error(`Paperclip instance '${instanceId}' is already running as ${status.serviceName}. Use 'paperclipai service status --instance ${instanceId}' or pass --force to bypass this safety check.`);
+  if (status.active) throw new Error(`Paperclip instance '${instanceId}' is already running as ${status.serviceName}. Use 'phibot service status --instance ${instanceId}' or pass --force to bypass this safety check.`);
 }
