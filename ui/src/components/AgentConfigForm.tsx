@@ -77,6 +77,9 @@ import {
   adapterLabels,
 } from "./agent-config-primitives";
 import { defaultCreateValues } from "./agent-config-defaults";
+import { usePhiBotLlmState } from "../hooks/usePhiBotLlmState";
+import { phiBotModelsForProvider } from "../lib/phibot-llm";
+import { phibotText } from "./phibot/phibot-text";
 import { getUIAdapter } from "../adapters";
 import { ClaudeLocalAdvancedFields } from "../adapters/claude-local/config-fields";
 import { MarkdownEditor } from "./MarkdownEditor";
@@ -917,7 +920,11 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
   });
   const [refreshModelsError, setRefreshModelsError] = useState<string | null>(null);
   const [refreshingModels, setRefreshingModels] = useState(false);
-  const models = connectionModels?.models ?? fetchedModels ?? externalModels ?? [];
+  const phiLlm = usePhiBotLlmState(selectedCompanyId, adapterType === "phi_local");
+  const unfilteredModels = connectionModels?.models ?? fetchedModels ?? externalModels ?? [];
+  const models = adapterType === "phi_local" && phiLlm.state.provider
+    ? phiBotModelsForProvider(unfilteredModels, phiLlm.state.provider)
+    : unfilteredModels;
   const modelError = connectionModels ? connectionModels.error : fetchedModelsError;
   const adapterCommandField = "command";
   const {
@@ -1281,7 +1288,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
         : adapterType === "opencode_local"
           ? "variant"
           : adapterType === "grok_local" ? "reasoningEffort"
-          : adapterType === "pi_local" ? "thinking" : "effort";
+          : adapterType === "pi_local" || adapterType === "phi_local" ? "thinking" : "effort";
   const thinkingEffortOptions =
     adapterType === "codex_local"
       ? codexReasoningEffortOptions(currentModelId, "Auto").map((option) => ({
@@ -1294,6 +1301,8 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
           ? openCodeThinkingEffortOptions
           : adapterType === "kimi_local"
             ? kimiThinkingEffortOptions
+            : adapterType === "phi_local"
+              ? [{ id: "", label: "Auto" }, ...["off", "minimal", "low", "medium", "high", "xhigh", "max"].map(id => ({ id, label: id }))]
             : adapterType === "pi_local"
               ? [{ id: "", label: "Auto" }, ...["off", "minimal", "low", "medium", "high", "xhigh"].map(id => ({ id, label: id }))]
               : adapterType === "claude_local" || adapterType === "grok_local"
@@ -1751,7 +1760,7 @@ export function AgentConfigForm(props: AgentConfigFormProps) {
                 }}
                 open={modelOpen}
                 onOpenChange={setModelOpen}
-                defaultLabel={adapterType === "claude_local" ? `Default (${DEFAULT_CLAUDE_LOCAL_MODEL})` : undefined}
+                defaultLabel={adapterType === "claude_local" ? `Default (${DEFAULT_CLAUDE_LOCAL_MODEL})` : adapterType === "phi_local" ? phibotText().companyDefaultModelLabel : undefined}
                 allowDefault={adapterType !== "opencode_local" && adapterType !== "pi_local" && adapterType !== "paperclip_runner"}
                 required={adapterType === "opencode_local" || adapterType === "pi_local"}
                 groupByProvider={!connectionModels && (adapterType === "opencode_local" || adapterType === "pi_local")}

@@ -80,6 +80,9 @@ export function AgentBasicsDialog({
       !getAdapterDisplay(adapter.type).comingSoon,
   );
   const validAdapter = choices.some((adapter) => adapter.type === adapterType);
+  // Phi Bot: when phi_local is the only engine, skip the one-tile adapter step
+  // and hide the external agent invite (its prompt targets other harnesses).
+  const onlyChoice = choices.length === 1 && choices[0]?.type === "phi_local" ? "phi_local" : null;
   return (
     <Dialog
       open={open}
@@ -114,7 +117,8 @@ export function AgentBasicsDialog({
           onSubmit={(event) => {
             event.preventDefault();
             if (!name.trim()) return;
-            if (step === "name") setStep("adapter");
+            if (step === "name" && onlyChoice) onContinue({ name: name.trim(), adapterType: onlyChoice, runnerProvider });
+            else if (step === "name") setStep("adapter");
             else if (validAdapter)
               onContinue({ name: name.trim(), adapterType, runnerProvider });
           }}
@@ -149,7 +153,7 @@ export function AgentBasicsDialog({
                   onChange={(event) => setName(event.target.value)}
                   className="h-12 text-base"
                 />
-                {onInvite && (
+                {onInvite && !onlyChoice && (
                   <Button
                     type="button"
                     variant="link"
@@ -248,7 +252,7 @@ export function AgentBasicsDialog({
               type="submit"
               disabled={!name.trim() || (step === "adapter" && !validAdapter)}
             >
-              {step === "name" ? "Choose adapter" : "Configure agent"}
+              {step === "name" && !onlyChoice ? "Choose adapter" : "Configure agent"}
               <ArrowRight className="size-4" />
             </Button>
           </div>

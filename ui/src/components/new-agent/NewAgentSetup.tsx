@@ -67,6 +67,9 @@ import {
   type ProviderConnection,
 } from "./AgentProviderConnection";
 import { adapterCuratesModelOrder } from "../../lib/model-utils";
+import { usePhiBotLlmState } from "../../hooks/usePhiBotLlmState";
+import { phiBotModelsForProvider } from "../../lib/phibot-llm";
+import { phibotText } from "../phibot/phibot-text";
 
 const controlClass = nativeSelectClassName;
 const blocking = (result: AdapterEnvironmentTestResult) =>
@@ -157,6 +160,7 @@ function Setup({
   const [connection, setConnection] = useState<ProviderConnection | null>(null);
   const aiBinding = runtimeAiBinding ?? connection?.aiConnection;
   const connectionModels = useConnectionModels(companyId, aiBinding, brandType);
+  const phiLlm = usePhiBotLlmState(companyId, brandType === "phi_local");
   const [repository, setRepository] = useState("");
   const [branch, setBranch] = useState("");
   const [createdInSession, setCreated] = useState<Agent | null>(null);
@@ -857,7 +861,8 @@ function Setup({
                             {showModel && !usingKimiApi && (
                               <ModelDropdown
                                 presentation="native"
-                                models={connectionModels?.models ?? models.data ?? []}
+                                models={brandType === "phi_local" && phiLlm.state.provider ? phiBotModelsForProvider(models.data ?? [], phiLlm.state.provider) : (connectionModels?.models ?? models.data ?? [])}
+                                defaultLabel={brandType === "phi_local" ? phibotText().companyDefaultModelLabel : undefined}
                                 loadingModels={connectionModels?.isLoading ?? models.isLoading}
                                 onRefreshModels={connectionModels?.refreshModels}
                                 refreshingModels={connectionModels?.refreshing}
