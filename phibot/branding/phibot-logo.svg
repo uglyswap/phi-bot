@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Phi Bot">
+  <title>Phi Bot</title>
+  <path fill="#8b5cf6" fill-rule="evenodd" d="M4 16a12 10 0 1 0 24 0a12 10 0 1 0 -24 0ZM10 16a6 6 0 1 0 12 0a6 6 0 1 0 -12 0Z"/>
+  <rect fill="#8b5cf6" x="14" y="2" width="4" height="28" rx="2"/>
+</svg>
