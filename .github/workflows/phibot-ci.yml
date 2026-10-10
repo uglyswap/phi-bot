@@ -1,0 +1,103 @@
+name: Phi Bot CI
+
+# Every pull request: unit tests and typecheck (spec 15.1), then the single package built in the
+# order of spec 10.2 and its end-to-end installation test (spec 15.2) on three blank systemd
+# servers. Nothing is published. Actions are pinned by commit SHA (read on 2026-10-09).
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phibot-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      VERSION: 0.0.0-pr.${{ github.run_number }}
+    outputs:
+      tarball: ${{ steps.pack.outputs.tarball }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Release package manifest
+        run: node scripts/release-package-map.mjs check
+      - name: Typecheck
+        run: pnpm -r typecheck
+      - name: Unit tests (before the rebranding, spec 10.1)
+        run: |
+          node --test scripts/phibot-brand-assets.test.mjs scripts/phibot-rebrand-lib.test.mjs scripts/phibot-rebrand.test.mjs scripts/phibot-pack-lib.test.mjs scripts/phibot-pack.test.mjs scripts/release-package-map.test.mjs
+          pnpm test:run
+      - name: Rebranding (never committed)
+        run: node scripts/phibot-rebrand.mjs --apply
+      - name: Rebuild @paperclipai/shared after the rebranding
+        run: pnpm --filter @paperclipai/shared build
+      - name: Build UI and server
+        run: pnpm build
+      - name: Standalone packages
+        run: node scripts/build-standalone-public-packages.mjs
+      - name: UI inside the server
+        run: bash scripts/prepare-server-ui-dist.sh
+      - name: Skills
+        run: |
+          for d in server packages/adapters/claude-local packages/adapters/codex-local; do
+            rm -rf "$d/skills"
+            cp -r skills "$d/skills"
+          done
+      - name: Set the version
+        run: node scripts/release-package-map.mjs set-version "$VERSION"
+      - name: CLI bundle
+        run: ./scripts/build-npm.sh --skip-checks --skip-typecheck
+      - name: Single package
+        id: pack
+        run: |
+          node scripts/phibot-pack.mjs --version "$VERSION" --out "$RUNNER_TEMP/phibot-pack"
+          mkdir -p "$RUNNER_TEMP/dist"
+          cp "$RUNNER_TEMP/phibot-pack/phi-code-admin-phi-bot-$VERSION.tgz" "$RUNNER_TEMP/dist/"
+          echo "tarball=phi-code-admin-phi-bot-$VERSION.tgz" >> "$GITHUB_OUTPUT"
+          sha256sum "$RUNNER_TEMP/dist/phi-code-admin-phi-bot-$VERSION.tgz"
+      - name: Registry signatures of the dependency tree
+        run: node scripts/phibot-pack.mjs --audit-signatures "$RUNNER_TEMP/dist/phi-code-admin-phi-bot-$VERSION.tgz"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: phibot-tarball
+          path: ${{ runner.temp }}/dist/*.tgz
+          if-no-files-found: error
+
+  e2e_install:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [ubuntu-24.04, ubuntu-22.04, debian-12]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: phibot-tarball
+          path: dist
+      - name: End-to-end installation test (${{ matrix.distro }})
+        run: bash scripts/phibot-e2e-install.sh "dist/${{ needs.build.outputs.tarball }}" "0.0.0-pr.${{ github.run_number }}" "${{ matrix.distro }}"
