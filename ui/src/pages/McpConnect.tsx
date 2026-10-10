@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Globe, Paperclip } from "lucide-react";
+import { Bot as Paperclip, Globe } from "lucide-react";
 import { Link, useParams } from "@/lib/router";
 import type { McpConnection, McpConnectionRequest } from "@paperclipai/shared";
 import { Button } from "@/components/ui/button";

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { assistantClientNames, mcpAuthorizationHandoffInstructions, mcpInvitation, mcpSetupSteps, type AssistantClient } from "@paperclipai/shared";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, Copy, ExternalLink, Globe, Paperclip, Plug, Terminal } from "lucide-react";
+import { Bot as Paperclip, Check, Copy, ExternalLink, Globe, Plug, Terminal } from "lucide-react";
 import { publicMcpApi } from "@/api/publicMcp";
 import { ApiError } from "@/api/client";
 import { useCompany } from "@/context/CompanyContext";
