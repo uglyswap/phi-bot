@@ -94,7 +94,7 @@
     "test:lifecycle-baseline:typecheck": "tsc -p tests/lifecycle-baseline/tsconfig.json"
   },
   "devDependencies": {
-    "@playwright/test": "^1.62.1",
+    "@playwright/test": "^1.63.0",
     "agentmail": "^0.5.31",
     "cross-env": "^10.1.0",
     "esbuild": "^0.28.2",
