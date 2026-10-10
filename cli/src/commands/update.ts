@@ -13,6 +13,7 @@ import { resolveConfigPath } from "../config/store.js";
 import { detectServiceManager } from "../services/service-manager.js";
 import { restartManagedService } from "./service.js";
 import { packageVersion } from "../version.js";
+import { runPhibotUpdateIfServer } from "../phibot/update.js";
 
 const execFileAsync = promisify(execFile);
 export type InstallMode = "managed" | "global-npm" | "npx" | "source" | "unknown";
@@ -165,6 +166,9 @@ async function rollbackAfterServiceValidationFailure(
 }
 
 export async function updateCommand(options: UpdateOptions, overrides: Partial<Dependencies> = {}): Promise<void> {
+  // Phi Bot (spec 13.1): the global npm install of a server set up by `phibot setup` is updated
+  // with a full backup, `setup --repair` of the new version and an automatic rollback.
+  if (await runPhibotUpdateIfServer(options)) return;
   const paths = overrides.paths ?? resolveInstallStorePaths();
   const executablePath = overrides.executablePath ?? process.argv[1] ?? "";
   const runCommand = overrides.runCommand ?? execFileAsync;
