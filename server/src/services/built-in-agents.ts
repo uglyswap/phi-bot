@@ -26,6 +26,7 @@ import { companySkillService } from "./company-skills.js";
 import { routineService } from "./routines.js";
 import { accessService } from "./access.js";
 import { listAdapterModels } from "../adapters/registry.js";
+import { isAdapterDisabled } from "./adapter-plugin-store.js";
 import {
   resourceStatus,
   stableJson,
@@ -314,7 +315,7 @@ const DEFINITIONS = validateBuiltInAgentDefinitions([
     defaultInstructions:
       "You are Paperclip's built-in Briefs agent. Produce concise, sourced operational briefs that help the board understand current company work, risks, and next actions.",
     defaultRole: "general",
-    allowedAdapterTypes: ["codex_local", "claude_local", "gemini_local", "opencode_local", "process"],
+    allowedAdapterTypes: ["phi_local", "codex_local", "claude_local", "gemini_local", "opencode_local", "process"],
     defaultBudgetMonthlyCents: 0,
   },
   {
@@ -325,7 +326,7 @@ const DEFINITIONS = validateBuiltInAgentDefinitions([
     defaultInstructions:
       "You are Paperclip's built-in Learning agent. Extract durable lessons from completed work, preserve useful patterns, and keep learning artifacts grounded in source context.",
     defaultRole: "general",
-    allowedAdapterTypes: ["codex_local", "claude_local", "gemini_local", "opencode_local", "process"],
+    allowedAdapterTypes: ["phi_local", "codex_local", "claude_local", "gemini_local", "opencode_local", "process"],
     defaultBudgetMonthlyCents: 0,
   },
   {
@@ -349,7 +350,7 @@ const DEFINITIONS = validateBuiltInAgentDefinitions([
     },
     defaultStatus: "paused",
     defaultManager: "single_root_agent",
-    allowedAdapterTypes: ["claude_local", "codex_local", "gemini_local", "opencode_local", "process"],
+    allowedAdapterTypes: ["phi_local", "claude_local", "codex_local", "gemini_local", "opencode_local", "process"],
     defaultBudgetMonthlyCents: 0,
     bundle: {
       stockVersion: "2026-07-08",
@@ -417,11 +418,10 @@ const DEFINITIONS = validateBuiltInAgentDefinitions([
     },
     defaultStatus: "paused",
     defaultManager: "single_root_agent",
-    allowedAdapterTypes: ["claude_local", "codex_local", "gemini_local", "opencode_local", "process"],
-    defaultAdapterType: "claude_local",
-    defaultAdapterConfig: {
-      model: "claude-haiku-4-5",
-    },
+    allowedAdapterTypes: ["phi_local", "claude_local", "codex_local", "gemini_local", "opencode_local", "process"],
+    // Phi Bot (patch P9, M3): the company default model (PHIBOT_DEFAULT_MODEL) applies.
+    defaultAdapterType: "phi_local",
+    defaultAdapterConfig: {},
     defaultBudgetMonthlyCents: 0,
     bundle: {
       stockVersion: "2026-08-02",
@@ -695,6 +695,13 @@ function assertAdapterAllowed(definition: BuiltInAgentDefinition, adapterType: s
       code: "built_in_agent_adapter_not_allowed",
       key: definition.key,
       allowedAdapterTypes: definition.allowedAdapterTypes,
+    });
+  }
+  // Phi Bot (patch P9, M3): built-in agents follow PAPERCLIP_ADAPTERS too.
+  if (isAdapterDisabled(adapterType)) {
+    throw unprocessable(`Adapter "${adapterType}" is not available on this instance.`, {
+      code: "built_in_agent_adapter_disabled",
+      key: definition.key,
     });
   }
 }

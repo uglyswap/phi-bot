@@ -106,6 +106,7 @@ import {
 import { claimFirstInstanceAdmin } from "../first-admin-claim.js";
 import { getStorageService } from "../storage/index.js";
 import { secretService } from "../services/secrets.js";
+import { isAdapterDisabled } from "../services/adapter-plugin-store.js";
 
 function hashToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
@@ -679,6 +680,13 @@ export function assertLegacyAgentInviteAdapterType(
       "Paperclip Runner is not available through agent invite onboarding.",
       { code: "paperclip_runner_invite_onboarding_disabled" },
     );
+  }
+  // Phi Bot (patch P9, M2): the approval creates the agent with `adapterType ?? "process"`.
+  const effectiveAdapterType = adapterType ?? "process";
+  if (isAdapterDisabled(effectiveAdapterType)) {
+    throw badRequest(`Adapter "${effectiveAdapterType}" is not available on this instance.`, {
+      code: "adapter_disabled",
+    });
   }
 }
 

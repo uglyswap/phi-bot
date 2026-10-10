@@ -71,6 +71,7 @@ import {
 } from "@paperclipai/adapter-utils/server-utils";
 import { requireOpenCodeModelId } from "@paperclipai/adapter-opencode-local/server";
 import { findServerAdapter } from "../adapters/index.js";
+import { isAdapterDisabled } from "./adapter-plugin-store.js";
 import { formatAttachmentSize, MAX_ATTACHMENT_BYTES } from "../attachment-types.js";
 import { forbidden, notFound, unprocessable } from "../errors.js";
 import { ghFetch, gitHubApiBase, resolveRawGitHubUrl } from "./github-fetch.js";
@@ -3588,6 +3589,10 @@ export function companyPortabilityService(db: Db, storage?: StorageService) {
     }
     if (!findServerAdapter(adapterType)) {
       throw unprocessable(`Unknown adapter type: ${adapterType}`);
+    }
+    // Phi Bot (patch P9, M1): same rule as agent creation (PAPERCLIP_ADAPTERS).
+    if (isAdapterDisabled(adapterType)) {
+      throw unprocessable(`Adapter "${adapterType}" is not available on this instance.`);
     }
     return adapterType;
   }

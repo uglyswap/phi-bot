@@ -3,6 +3,7 @@ import type { Db } from "@paperclipai/db";
 import { AGENT_ICON_NAMES } from "@paperclipai/shared";
 import { forbidden } from "../errors.js";
 import { listServerAdapters } from "../adapters/index.js";
+import { listEnabledServerAdapters } from "../adapters/registry.js";
 import { hermesGatewayAgentConfigurationDoc } from "../adapters/hermes-gateway-doc.js";
 import { agentService } from "../services/agents.js";
 
@@ -32,7 +33,8 @@ export function llmRoutes(db: Db) {
 
   router.get("/llms/agent-configuration.txt", async (req, res) => {
     await assertCanRead(req);
-    const adapters = listServerAdapters().sort((a, b) => a.type.localeCompare(b.type));
+    // Phi Bot (patch P9, M4): only the adapters this instance accepts for hires.
+    const adapters = listEnabledServerAdapters().sort((a, b) => a.type.localeCompare(b.type));
     const lines = [
       "# Paperclip Agent Configuration Index",
       "",
