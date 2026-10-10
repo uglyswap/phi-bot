@@ -122,6 +122,12 @@ const adapterDisplayMap: Record<string, AdapterDisplayInfo> = {
     description: "Pi harness",
     icon: Terminal,
   },
+  phi_local: {
+    label: "Phi",
+    description: "Phi Bot engine (phi-code)",
+    icon: Bot,
+    recommended: true,
+  },
   cursor: {
     label: "Cursor",
     description: "Cursor CLI harness",
