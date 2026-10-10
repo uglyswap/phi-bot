@@ -34,7 +34,7 @@ import {
   routineRevisions,
   routines,
 } from "@paperclipai/db";
-import { notFound, unprocessable } from "../errors.js";
+import { conflict, notFound, unprocessable } from "../errors.js";
 import { isCloudManagedInstance } from "./cloud-instance.js";
 import { notifyCloudOfPrimaryCompanyLifecycleChange } from "./cloud-lifecycle-sync.js";
 import {
@@ -316,6 +316,16 @@ export function companyService(db: Db) {
     },
 
     create: async (data: typeof companies.$inferInsert) => {
+      // Phi Bot (patch P6): one company per installation (its PHIBOT_LLM_*
+      // secrets are bound to the single local environment).
+      if (process.env.PHIBOT_SINGLE_COMPANY === "true") {
+        const [existing] = await db.select({ id: companies.id }).from(companies).limit(1);
+        if (existing) {
+          throw conflict("Phi Bot runs a single company per installation.", {
+            code: "phibot_single_company",
+          });
+        }
+      }
       const created = await createCompanyWithUniquePrefix(data);
       await environmentsSvc.ensureLocalEnvironment(created.id);
       await builtInAgents.autoProvisionBundledAgents(created.id);
