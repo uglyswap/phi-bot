@@ -32,7 +32,20 @@ const mockEnvironmentService = vi.hoisted(() => ({
   releaseLease: vi.fn(),
   listBoundCompanyIds: vi.fn(async () => [] as string[]),
   findManagedSandboxEnvironment: vi.fn(async () => null as Record<string, unknown> | null),
+  // Phi Bot (P7): the route falls back to the local environment, like a run.
+  ensureLocalEnvironment: vi.fn(),
 }));
+
+// Phi Bot (P7): local environment returned by ensureLocalEnvironment.
+const LOCAL_TEST_ENVIRONMENT = {
+  id: "99999999-9999-4999-8999-999999999999",
+  companyId: null,
+  name: "Local",
+  driver: "local",
+  status: "active",
+  config: {},
+  envVars: {},
+};
 
 const mockReleaseRunLease = vi.hoisted(() => vi.fn(async () => undefined));
 const mockEnvironmentRuntime = vi.hoisted(() => ({
@@ -195,13 +208,20 @@ describe("agent test-environment route", () => {
       reason: "allow_explicit_grant",
       explanation: "Allowed by test grant",
     });
-    mockEnvironmentService.getById.mockResolvedValue({
-      id: "11111111-1111-4111-8111-111111111111",
-      companyId: "company-1",
-      name: "Sandbox QA",
-      driver: "sandbox",
-      config: { provider: "fake-plugin" },
-    });
+    // Phi Bot (P7): the local environment answers to its own id; every other
+    // id keeps the sandbox fixture.
+    mockEnvironmentService.ensureLocalEnvironment.mockResolvedValue(LOCAL_TEST_ENVIRONMENT);
+    mockEnvironmentService.getById.mockImplementation(async (id: string) =>
+      id === LOCAL_TEST_ENVIRONMENT.id
+        ? LOCAL_TEST_ENVIRONMENT
+        : {
+            id: "11111111-1111-4111-8111-111111111111",
+            companyId: "company-1",
+            name: "Sandbox QA",
+            driver: "sandbox",
+            config: { provider: "fake-plugin" },
+          },
+    );
     // Default to an instance-global environment with no company binding, so the
     // tenant-binding guard passes unless a test overrides it.
     mockEnvironmentService.listBoundCompanyIds.mockResolvedValue([]);
@@ -333,6 +353,31 @@ describe("agent test-environment route", () => {
     expect(res.status).toBe(403);
     expect(mockSecretService.normalizeAdapterConfigForPersistence).not.toHaveBeenCalled();
     expect(testEnvironmentSpy).not.toHaveBeenCalled();
+  });
+
+  it("tests against the local environment and its envVars when no environment is selected (Phi Bot P7)", async () => {
+    const localWithBindings = {
+      ...LOCAL_TEST_ENVIRONMENT,
+      envVars: { PHIBOT_LLM_PROVIDER: { type: "plain", value: "anthropic" } },
+    };
+    mockEnvironmentService.ensureLocalEnvironment.mockResolvedValue(localWithBindings);
+    mockEnvironmentService.getById.mockImplementation(async (id: string) =>
+      id === localWithBindings.id ? localWithBindings : null,
+    );
+    const app = await createApp();
+    const res = await request(app)
+      .post("/api/companies/company-1/adapters/external_test/test-environment")
+      .send({ adapterConfig: {} });
+    expect(res.status, JSON.stringify(res.body)).toBe(200);
+    expect(mockEnvironmentService.ensureLocalEnvironment).toHaveBeenCalledWith("company-1");
+    // The local environment's envVars (the PHIBOT_LLM_* bindings) are resolved for the probe.
+    expect(mockSecretService.resolveEnvBindings).toHaveBeenCalledWith(
+      "company-1",
+      { PHIBOT_LLM_PROVIDER: { type: "plain", value: "anthropic" } },
+      expect.objectContaining({ consumerType: "environment", consumerId: localWithBindings.id }),
+    );
+    expect(mockEnvironmentRuntime.acquireRunLease).not.toHaveBeenCalled();
+    expect(testEnvironmentSpy).toHaveBeenCalledWith(expect.objectContaining({ executionTarget: null }));
   });
 
   it("never probes the host when an inherited environment is missing", async () => {

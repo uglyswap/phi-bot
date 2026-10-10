@@ -1200,7 +1200,9 @@ export function agentRoutes(
       }
       return managed.id;
     }
-    return null;
+    // Phi Bot (patch P7): same fallback as runs (execution-workspace-policy.ts),
+    // the local environment, so the probe sees the envVars a run would receive.
+    return (await environmentsSvc.ensureLocalEnvironment(companyId)).id;
   }
 
   /**

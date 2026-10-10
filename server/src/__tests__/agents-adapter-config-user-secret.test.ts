@@ -33,8 +33,20 @@ const mockAccessService = vi.hoisted(() => ({
   listPrincipalGrants: vi.fn(async () => []),
 }));
 
+// Phi Bot (P7): local environment the adapter test route falls back to.
+const LOCAL_ENVIRONMENT = vi.hoisted(() => ({
+  id: "33333333-3333-4333-8333-333333333333",
+  companyId: null,
+  name: "Local",
+  driver: "local",
+  status: "active",
+  config: {},
+  envVars: {},
+}));
+
 const mockEnvironmentService = vi.hoisted(() => ({
-  getById: vi.fn(),
+  getById: vi.fn(async (id: string) => (id === LOCAL_ENVIRONMENT.id ? LOCAL_ENVIRONMENT : undefined)),
+  ensureLocalEnvironment: vi.fn(async () => LOCAL_ENVIRONMENT),
   releaseLease: vi.fn(),
   // The tenant-binding guard reads the environment's bound company ids before it
   // reveals the driver or the status. An empty list marks an instance-global
@@ -315,7 +327,7 @@ describeEmbeddedPostgres("agents adapter-config user-secret resolution routes", 
   });
 
   it("test-environment records an honest audit consumer (environment:<id> when selected, else system:adapter_test — never agent) with the real actor/responsible-user", async () => {
-    // (a) No environment selected → system:adapter_test.
+    // (a) No environment selected → the local environment (Phi Bot P7), as a run.
     beforeEachActor(boardUserActor);
     await seedUserSecretDefinitionWithValue("github_token", "ghp_owner");
     let app = await createApp();
@@ -331,8 +343,8 @@ describeEmbeddedPostgres("agents adapter-config user-secret resolution routes", 
     let events = await db.select().from(secretAccessEvents);
     expect(events.length).toBeGreaterThan(0);
     for (const ev of events) {
-      expect(ev.consumerType).toBe("system");
-      expect(ev.consumerId).toBe("adapter_test");
+      expect(ev.consumerType).toBe("environment");
+      expect(ev.consumerId).toBe(LOCAL_ENVIRONMENT.id);
       expect(ev.consumerType).not.toBe("agent");
       expect(ev.actorType).toBe("user");
       expect(ev.actorId).toBe("user-1");

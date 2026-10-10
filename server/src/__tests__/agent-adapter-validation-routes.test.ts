@@ -80,6 +80,26 @@ const mockRemoteAgentProfileService = vi.hoisted(() => ({
 
 const mockLogActivity = vi.hoisted(() => vi.fn());
 
+// Phi Bot (P7): the adapter test route falls back to the local environment.
+const mockEnvironmentService = vi.hoisted(() => {
+  const local = {
+    id: "99999999-9999-4999-8999-999999999999",
+    companyId: null,
+    name: "Local",
+    driver: "local",
+    status: "active",
+    config: {},
+    envVars: {},
+  };
+  return {
+    ensureLocalEnvironment: vi.fn(async () => local),
+    getById: vi.fn(async (id: string) => (id === local.id ? local : null)),
+    releaseLease: vi.fn(),
+    listBoundCompanyIds: vi.fn(async () => [] as string[]),
+    findManagedSandboxEnvironment: vi.fn(async () => null),
+  };
+});
+
 vi.mock("../services/index.js", () => ({
   agentService: () => mockAgentService,
   agentInstructionsService: () => mockAgentInstructionsService,
@@ -111,6 +131,10 @@ vi.mock("../services/managed-agent-profiles.js", () => ({
 
 vi.mock("../services/remote-agent-profiles.js", () => ({
   remoteAgentProfileService: () => mockRemoteAgentProfileService,
+}));
+
+vi.mock("../services/environments.js", () => ({
+  environmentService: () => mockEnvironmentService,
 }));
 
 function registerModuleMocks() {
@@ -145,6 +169,10 @@ function registerModuleMocks() {
 
   vi.doMock("../services/remote-agent-profiles.js", () => ({
     remoteAgentProfileService: () => mockRemoteAgentProfileService,
+  }));
+
+  vi.doMock("../services/environments.js", () => ({
+    environmentService: () => mockEnvironmentService,
   }));
 
   // The adapter registry reads the disabled set from this store. Mock it so a
